@@ -33,21 +33,16 @@ function App() {
   )
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dragOverSlot, setDragOverSlot] = useState<number | null>(null)
-  const [selectedFood, setSelectedFood] = useState<Food | null>(null)
-
   const placedIds = new Set(
     ranking.filter((f): f is Food => f !== null).map((f) => f.id),
   )
 
   const availableFoods = FOODS.filter((f) => !placedIds.has(f.id))
 
-  // ---- Desktop drag-and-drop ----
-
   function onDragStart(e: DragEvent, food: Food) {
     e.dataTransfer.setData('text/plain', food.id)
     e.dataTransfer.effectAllowed = 'move'
     setDraggingId(food.id)
-    setSelectedFood(null)
   }
 
   function onDragEnd() {
@@ -73,40 +68,39 @@ function App() {
     placeFood(foodId, targetIndex)
   }
 
-  // ---- Shared placement logic ----
-
   function placeFood(foodId: string, targetIndex: number) {
     const food = FOODS.find((f) => f.id === foodId)
     if (!food) return
 
     setRanking((prev) => {
-      const next = [...prev]
-      const existingIndex = next.findIndex((f) => f?.id === foodId)
-      if (existingIndex !== -1) next[existingIndex] = null
+      const items = prev.filter((f): f is Food => f !== null && f.id !== foodId)
 
-      const displaced = next[targetIndex]
-      next[targetIndex] = food
-      if (displaced && existingIndex !== -1) {
-        next[existingIndex] = displaced
+      let insertAt = 0
+      for (let i = 0; i < targetIndex; i++) {
+        if (prev[i] !== null && prev[i]!.id !== foodId) insertAt++
+      }
+
+      items.splice(insertAt, 0, food)
+
+      const next: (Food | null)[] = Array(SLOT_COUNT).fill(null)
+      for (let i = 0; i < Math.min(items.length, SLOT_COUNT); i++) {
+        next[i] = items[i]
       }
 
       return next
     })
   }
 
-  // ---- Tap-to-place (mobile) ----
-
   function onFoodTap(food: Food) {
-    setSelectedFood((prev) => (prev?.id === food.id ? null : food))
+    const firstEmpty = ranking.findIndex((f) => f === null)
+    if (firstEmpty !== -1) {
+      placeFood(food.id, firstEmpty)
+    }
   }
 
   function onSlotTap(index: number) {
-    if (selectedFood) {
-      placeFood(selectedFood.id, index)
-      setSelectedFood(null)
-    } else if (ranking[index]) {
-      // Tap a filled slot to select it for moving
-      setSelectedFood(ranking[index])
+    if (ranking[index]) {
+      removeFromSlot(index)
     }
   }
 
@@ -116,12 +110,10 @@ function App() {
       next[index] = null
       return next
     })
-    setSelectedFood(null)
   }
 
   function reset() {
     setRanking(Array(SLOT_COUNT).fill(null))
-    setSelectedFood(null)
   }
 
   return (
@@ -130,9 +122,7 @@ function App() {
         <h1>Food Today</h1>
         <p>
           <span className="hint-desktop">Drag your picks into the ranking</span>
-          <span className="hint-mobile">
-            Tap a food, then tap a slot to place it
-          </span>
+          <span className="hint-mobile">Tap to add, drag to reorder</span>
         </p>
       </header>
 
@@ -143,7 +133,7 @@ function App() {
             {availableFoods.map((food) => (
               <div
                 key={food.id}
-                className={`food-card${draggingId === food.id ? ' dragging' : ''}${selectedFood?.id === food.id ? ' selected' : ''}`}
+                className={`food-card${draggingId === food.id ? ' dragging' : ''}`}
                 draggable
                 onDragStart={(e) => onDragStart(e, food)}
                 onDragEnd={onDragEnd}
@@ -163,7 +153,7 @@ function App() {
             {ranking.map((food, i) => (
               <div
                 key={i}
-                className={`rank-slot${dragOverSlot === i ? ' drag-over' : ''}${food ? ' filled' : ''}${selectedFood && !food ? ' awaiting' : ''}`}
+                className={`rank-slot${dragOverSlot === i ? ' drag-over' : ''}${food ? ' filled' : ''}`}
                 onDragOver={(e) => onSlotDragOver(e, i)}
                 onDragLeave={(e) => onSlotDragLeave(e, i)}
                 onDrop={(e) => onSlotDrop(e, i)}
@@ -172,7 +162,7 @@ function App() {
                 <span className="rank-number">{i + 1}</span>
                 {food ? (
                   <div
-                    className={`food-card${selectedFood?.id === food.id ? ' selected' : ''}`}
+                    className="food-card"
                     draggable
                     onDragStart={(e) => {
                       e.stopPropagation()
@@ -194,9 +184,7 @@ function App() {
                     </button>
                   </div>
                 ) : (
-                  <span className="rank-placeholder">
-                    {selectedFood ? 'Tap to place' : 'Empty'}
-                  </span>
+                  <span className="rank-placeholder">Empty</span>
                 )}
               </div>
             ))}
