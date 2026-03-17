@@ -1,0 +1,304 @@
+.app-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin-bottom: 4px;
+}
+
+.app-header p {
+  color: var(--text);
+}
+
+.hint-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    margin-bottom: 20px;
+  }
+
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .hint-desktop {
+    display: none;
+  }
+
+  .hint-mobile {
+    display: inline;
+  }
+}
+
+/* ---- Layout ---- */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* ---- Section headings ---- */
+.pool h2,
+.ranking h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 12px;
+}
+
+@media (max-width: 640px) {
+  .pool h2,
+  .ranking h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+}
+
+/* ---- Food cards pool ---- */
+.pool-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .pool-cards {
+    gap: 8px;
+  }
+}
+
+/* ---- Food card ---- */
+.food-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--card-bg);
+  border: 2px solid var(--slot-border);
+  border-radius: 10px;
+  cursor: grab;
+  user-select: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-h);
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.food-card:active {
+  cursor: grabbing;
+}
+
+.food-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.food-card.selected {
+  border-color: var(--accent);
+  background: var(--slot-active);
+  box-shadow: 0 0 0 3px var(--slot-active-border);
+}
+
+.food-card .emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .food-card {
+    padding: 12px 14px;
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .food-card .emoji {
+    font-size: 1.2rem;
+  }
+}
+
+/* ---- Ranking slots ---- */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .ranking-list {
+    gap: 6px;
+  }
+}
+
+.rank-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--slot-bg);
+  border: 2px dashed var(--slot-border);
+  border-radius: 10px;
+  min-height: 48px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rank-slot.drag-over,
+.rank-slot.awaiting {
+  background: var(--slot-active);
+  border-color: var(--slot-active-border);
+}
+
+.rank-slot.filled {
+  border-style: solid;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 640px) {
+  .rank-slot {
+    min-height: 44px;
+    padding: 6px 10px;
+    gap: 8px;
+    border-radius: 8px;
+  }
+}
+
+.rank-number {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .rank-number {
+    font-size: 0.9rem;
+    width: 22px;
+  }
+}
+
+.rank-slot .food-card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  flex: 1;
+  background: transparent;
+}
+
+.rank-slot .food-card.selected {
+  box-shadow: none;
+  background: transparent;
+  border: none;
+}
+
+.rank-slot .food-card .emoji {
+  font-size: 1.2rem;
+}
+
+.food-name {
+  flex: 1;
+}
+
+.rank-placeholder {
+  color: var(--slot-border);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ---- Remove button on ranked items ---- */
+.remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--slot-bg);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+  .remove-btn:hover {
+    background: #451a1a;
+    color: #f87171;
+  }
+}
+
+@media (max-width: 640px) {
+  .remove-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+}
+
+/* ---- Reset button ---- */
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid var(--slot-border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reset-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .reset-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    margin-top: 12px;
+  }
+}
