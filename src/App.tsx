@@ -1,4 +1,5 @@
 import './App.css'
+import { PODIUM_SIZE } from './foods'
 import { useRanking } from './useRanking'
 
 function App() {
@@ -67,7 +68,9 @@ function App() {
                 className={`rank-slot${insertPos !== null && insertPos <= i && food ? ' shift-down' : ''}${food ? ' filled' : ''}`}
                 onClick={() => onSlotTap(i)}
               >
-                <span className="rank-number">{i < 3 ? i + 1 : ''}</span>
+                <span className="rank-number">
+                  {i < PODIUM_SIZE ? i + 1 : ''}
+                </span>
                 {food ? (
                   <div
                     className="food-card"
