@@ -53,7 +53,17 @@ function App() {
         </section>
 
         <section className="ranking">
-          <h2>Your ranking</h2>
+          <div className="ranking-header">
+            <h2>Your ranking</h2>
+            <div className="ranking-actions">
+              <button className="propose-btn" onClick={randomize}>
+                Propose
+              </button>
+              <button className="reset-btn" onClick={reset}>
+                Reset
+              </button>
+            </div>
+          </div>
           <div
             className="ranking-list"
             ref={listRef}
@@ -99,14 +109,6 @@ function App() {
                 )}
               </div>
             ))}
-          </div>
-          <div className="ranking-actions">
-            <button className="propose-btn" onClick={randomize}>
-              Propose
-            </button>
-            <button className="reset-btn" onClick={reset}>
-              Reset
-            </button>
           </div>
         </section>
       </div>
