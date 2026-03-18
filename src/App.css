@@ -148,8 +148,13 @@
   min-height: 48px;
   transition:
     background 0.15s,
-    border-color 0.15s;
+    border-color 0.15s,
+    transform 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+}
+
+.rank-slot.shift-down {
+  transform: translateY(12%);
 }
 
 .rank-slot.drag-over {
