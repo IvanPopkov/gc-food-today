@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import App from './App'
+import { FOODS } from './foods'
 
 describe('App', () => {
   it('renders the heading', () => {
@@ -16,9 +17,9 @@ describe('App', () => {
     expect(screen.getByText('Pasta')).toBeInTheDocument()
   })
 
-  it('renders 10 ranking slots', () => {
+  it('renders ranking slots matching the number of foods', () => {
     render(<App />)
     const slots = screen.getAllByText('Empty')
-    expect(slots).toHaveLength(10)
+    expect(slots).toHaveLength(FOODS.length)
   })
 })

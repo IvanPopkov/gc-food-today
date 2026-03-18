@@ -15,6 +15,7 @@ import {
   compactRanking,
   getPlacedIds,
   filledCount,
+  randomRanking,
 } from './ranking'
 
 export function useRanking() {
@@ -160,6 +161,11 @@ export function useRanking() {
     updateRanking((prev) => removeFromRanking(prev, index))
   }
 
+  function randomize() {
+    capturePositions()
+    setRanking(randomRanking(FOODS))
+  }
+
   function reset() {
     setRanking(emptyRanking())
   }
@@ -179,6 +185,7 @@ export function useRanking() {
     onFoodTap,
     onSlotTap,
     removeFromSlot,
+    randomize,
     reset,
   }
 }
