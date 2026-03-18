@@ -43,3 +43,10 @@ export function getPlacedIds(ranking: Ranking): Set<string> {
 export function filledCount(ranking: Ranking): number {
   return ranking.filter((f) => f !== null).length
 }
+
+export function randomRanking(foods: Food[]): Ranking {
+  const shuffled = [...foods].sort(() => Math.random() - 0.5)
+  const result: Ranking = Array(foods.length).fill(null)
+  shuffled.forEach((f, i) => (result[i] = f))
+  return result
+}

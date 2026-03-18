@@ -1,4 +1,5 @@
 import './App.css'
+import { PODIUM_SIZE } from './foods'
 import { useRanking } from './useRanking'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     onFoodTap,
     onSlotTap,
     removeFromSlot,
+    randomize,
     reset,
   } = useRanking()
 
@@ -66,7 +68,9 @@ function App() {
                 className={`rank-slot${insertPos !== null && insertPos <= i && food ? ' shift-down' : ''}${food ? ' filled' : ''}`}
                 onClick={() => onSlotTap(i)}
               >
-                <span className="rank-number">{i + 1}</span>
+                <span className="rank-number">
+                  {i < PODIUM_SIZE ? i + 1 : ''}
+                </span>
                 {food ? (
                   <div
                     className="food-card"
@@ -96,9 +100,14 @@ function App() {
               </div>
             ))}
           </div>
-          <button className="reset-btn" onClick={reset}>
-            Reset
-          </button>
+          <div className="ranking-actions">
+            <button className="propose-btn" onClick={randomize}>
+              Propose
+            </button>
+            <button className="reset-btn" onClick={reset}>
+              Reset
+            </button>
+          </div>
         </section>
       </div>
     </>

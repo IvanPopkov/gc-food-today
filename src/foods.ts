@@ -22,5 +22,6 @@ export const FOODS: Food[] = [
   { id: 'pokebowl', name: 'Pokebowl', emoji: '🐟' },
 ]
 
-export const SLOT_COUNT = 10
+export const SLOT_COUNT = FOODS.length
+export const PODIUM_SIZE = 3
 export const ANIM_DURATION = 200

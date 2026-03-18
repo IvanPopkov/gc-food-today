@@ -1,12 +1,5 @@
-import {
-  useRef,
-  useMemo,
-  useState,
-  useLayoutEffect,
-  useCallback,
-  type DragEvent,
-} from 'react'
-import { FOODS, SLOT_COUNT, ANIM_DURATION, type Food } from './foods'
+import { useRef, useMemo, useState, useEffect, type DragEvent } from 'react'
+import { FOODS, SLOT_COUNT, type Food } from './foods'
 import {
   type Ranking,
   emptyRanking,
@@ -15,15 +8,27 @@ import {
   compactRanking,
   getPlacedIds,
   filledCount,
+  randomRanking,
 } from './ranking'
+import { useFlipAnimation } from './useFlipAnimation'
+import {
+  type RankingStorage,
+  createLocalRankingStorage,
+} from './rankingStorage'
 
-export function useRanking() {
-  const [ranking, setRanking] = useState<Ranking>(emptyRanking)
+const defaultStorage = createLocalRankingStorage('food-today-ranking')
+
+export function useRanking(storage: RankingStorage = defaultStorage) {
+  const [ranking, setRanking] = useState<Ranking>(() => storage.load())
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [insertPos, setInsertPos] = useState<number | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const positionsRef = useRef<Map<string, DOMRect>>(new Map())
-  const flipCounterRef = useRef(0)
+
+  const { capturePositions } = useFlipAnimation(listRef, ranking)
+
+  useEffect(() => {
+    storage.save(ranking)
+  }, [ranking, storage])
 
   const placedIds = getPlacedIds(ranking)
   const availableFoods = FOODS.filter((f) => !placedIds.has(f.id))
@@ -32,60 +37,6 @@ export function useRanking() {
     if (!draggingId || !placedIds.has(draggingId)) return ranking
     return compactRanking(ranking, draggingId)
   }, [ranking, draggingId, placedIds])
-
-  const capturePositions = useCallback(() => {
-    if (!listRef.current) return
-    const map = new Map<string, DOMRect>()
-    const slots = listRef.current.children
-    for (let i = 0; i < slots.length; i++) {
-      const slot = slots[i] as HTMLElement
-      const foodId = slot.dataset.foodId
-      if (foodId) {
-        map.set(foodId, slot.getBoundingClientRect())
-      }
-    }
-    positionsRef.current = map
-    flipCounterRef.current++
-  }, [])
-
-  useLayoutEffect(() => {
-    if (!listRef.current) return
-    const oldPositions = positionsRef.current
-    if (oldPositions.size === 0) return
-
-    const slots = listRef.current.children
-    const animations: { el: HTMLElement; deltaY: number }[] = []
-
-    for (let i = 0; i < slots.length; i++) {
-      const slot = slots[i] as HTMLElement
-      const foodId = slot.dataset.foodId
-      if (!foodId) continue
-
-      const oldRect = oldPositions.get(foodId)
-      if (!oldRect) continue
-
-      const newRect = slot.getBoundingClientRect()
-      const deltaY = oldRect.top - newRect.top
-
-      if (Math.abs(deltaY) > 1) {
-        animations.push({ el: slot, deltaY })
-      }
-    }
-
-    if (animations.length === 0) return
-
-    for (const { el, deltaY } of animations) {
-      el.style.transform = `translateY(${deltaY}px)`
-      el.style.transition = 'none'
-    }
-
-    requestAnimationFrame(() => {
-      for (const { el } of animations) {
-        el.style.transition = `transform ${ANIM_DURATION}ms ease`
-        el.style.transform = ''
-      }
-    })
-  }, [ranking])
 
   function updateRanking(updater: (prev: Ranking) => Ranking) {
     capturePositions()
@@ -160,12 +111,16 @@ export function useRanking() {
     updateRanking((prev) => removeFromRanking(prev, index))
   }
 
+  function randomize() {
+    capturePositions()
+    setRanking(randomRanking(FOODS))
+  }
+
   function reset() {
     setRanking(emptyRanking())
   }
 
   return {
-    ranking,
     draggingId,
     insertPos,
     listRef,
@@ -179,6 +134,7 @@ export function useRanking() {
     onFoodTap,
     onSlotTap,
     removeFromSlot,
+    randomize,
     reset,
   }
 }
