@@ -1,8 +1,15 @@
 import './App.css'
 import { PODIUM_SIZE } from './foods'
+import type { Ranking } from './ranking'
+import type { RankingStorage } from './platform/storage'
 import { useRanking } from './useRanking'
 
-function App() {
+interface AppProps {
+  initialRanking: Ranking
+  storage: RankingStorage
+}
+
+function App({ initialRanking, storage }: AppProps) {
   const {
     draggingId,
     insertPos,
@@ -19,7 +26,7 @@ function App() {
     removeFromSlot,
     randomize,
     reset,
-  } = useRanking()
+  } = useRanking({ initialRanking, storage })
 
   return (
     <>
@@ -38,6 +45,7 @@ function App() {
             {availableFoods.map((food) => (
               <div
                 key={food.id}
+                data-pool-food-id={food.id}
                 className={`food-card${draggingId === food.id ? ' dragging' : ''}`}
                 draggable
                 onDragStart={(e) => onDragStart(e, food)}
