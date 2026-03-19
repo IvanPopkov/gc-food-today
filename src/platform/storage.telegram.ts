@@ -1,4 +1,4 @@
-import { emptyRanking } from '../ranking'
+import { type Ranking, emptyRanking } from '../ranking'
 import type { RankingStorage } from './storage'
 import { idsToRanking, parseIds, rankingToIds } from './storage.local'
 
